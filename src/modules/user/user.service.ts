@@ -42,7 +42,7 @@ export class UserService {
 
     async deleteUser(email){
         await this.userRepo.delete(email);
-        return {message :"User deleted"};
+        return {message :'User deleted'};
     }
 
 }
