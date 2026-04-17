@@ -15,14 +15,16 @@ export class UserService {
             name: createUserDto.name,
             email: createUserDto.email,
             password: createUserDto.password,
-            createdAt: new Date(),
+            role: createUserDto.role,
+            // createdAt: new Date(),
         });
+        console.log(createUserDto);
         await this.userRepo.save(user);
         return {message :'user created'};
     }
 
     async getUser(email){
-        const user= this.userRepo.find({where:email});
+        const user= this.userRepo.find({where: email});
         return user;
     }
 
@@ -36,12 +38,20 @@ export class UserService {
             throw new NotFoundException('User not found');
         }
         user.password = newPassword;
+        await this.userRepo.save(user);
         return user;
     }
 
-    async deleteUser(email){
-        await this.userRepo.delete(email);
-        return {message :'User deleted'};
-    }
+    async deleteUser(email: string) {
+  const user = await this.userRepo.findOne({ where: { email } });
+
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  await this.userRepo.remove(user);
+
+  return { message: 'User deleted' };
+}
 
 }

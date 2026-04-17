@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from 'src/common/dto/createUser.dto';
+import { CreateUserDto } from 'src/modules/user/createUser.dto';
 
 @Controller('user')
 export class UserController {
@@ -24,12 +24,12 @@ export class UserController {
   }
   
   @Patch()
-  async updatePassword(@Body() email:string, @Body() newPassword:string){
-    return this.userService.updatePassword(email,newPassword);
+  async updatePassword(@Body() { email, newPassword }: { email: string; newPassword: string }) {
+    return this.userService.updatePassword(email, newPassword);
   }
 
   @Delete()
-  async deleteUser(@Body() email:string){
+  async deleteUser(@Body('email') email:string){
     return this.userService.deleteUser(email);
   }
 }
