@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { ProjectModule } from './modules/project/project.module';
+import { TaskModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { ProjectModule } from './modules/project/project.module';
     synchronize: true,
   }),
   UserModule,
-  ProjectModule
+  ProjectModule,
+  TaskModule
   ],
   controllers: [AppController],
   providers: [AppService],
