@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './user.entity';
 import { Project } from './project.entity';
 import { TaskStatus } from '../common/enums/tasks.enum';
+import { comment } from './comments.entity';
 
 @Entity()
 export class Task {
@@ -31,4 +32,7 @@ export class Task {
     onDelete: 'SET NULL',
   })
   assignedTo!: User;
+
+  @OneToMany(() => comment, (comment) => comment.task)
+comments!: comment[];
 }

@@ -57,7 +57,7 @@ export class ProjectService {
 
   const existingUserIds = new Set(project.users.map(user => user.id));
 
-  //  Filter only new users (avoid duplicates)
+  
   const newUsers: DeepPartial<User>[] = userIds
   .filter(id => !existingUserIds.has(id))
   .map(id => ({ id }));
