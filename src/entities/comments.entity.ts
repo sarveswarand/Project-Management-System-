@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColum
 import { Task } from "./task.entity";
 
 @Entity('comments')
-export class comment {
+export class Comment {
     @PrimaryGeneratedColumn()
     id!: number;
 
@@ -19,15 +19,15 @@ export class comment {
     userId!: string;
 
 
-    @ManyToOne(() => comment, (comment) => comment.replies, {
+    @ManyToOne(() => Comment, (comment) => comment.replies, {
         onDelete: 'CASCADE',
         nullable: true
     })
     @JoinColumn({ name: 'parentId' })
-    parent!: comment;
+    parent?: Comment;
 
-    @OneToMany(() => comment, (comment) => comment.parent)
-    replies!: comment[];
+    @OneToMany(() => Comment, (comment) => comment.parent)
+    replies!: Comment[];
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt!: Date;

@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'ty
 import { User } from './user.entity';
 import { Project } from './project.entity';
 import { TaskStatus } from '../common/enums/tasks.enum';
-import { comment } from './comments.entity';
+import { Comment } from './comments.entity';
 
 @Entity()
 export class Task {
@@ -33,6 +33,6 @@ export class Task {
   })
   assignedTo!: User;
 
-  @OneToMany(() => comment, (comment) => comment.task)
-comments!: comment[];
+  @OneToMany(() => Comment, (comment) => comment.task)
+comments!: Comment[];
 }

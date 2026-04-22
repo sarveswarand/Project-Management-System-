@@ -13,13 +13,11 @@ export class UserController {
 
   @Get()
   async getUser(@Body() email:string){
-    console.log("get particule user");
     return this.userService.getUser(email);
   }
 
   @Get('all')
   async getAllUser(){
-    console.log("get-all api hit ");
     return this.userService.getAllUser();
   }
   

@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { map } from 'rxjs';
 import { Project } from 'src/entities/project.entity';
@@ -13,6 +13,15 @@ export class ProjectService {
     ){}
 
     async createProject(createprojectDto){
+       const existingProject = await this.projectRepo.findOne({
+    where: { name: createprojectDto.name },
+  });
+
+  if (existingProject) {
+    throw new BadRequestException(
+      `Project with name ${createprojectDto.name} already exists`,
+    );
+  }
         const project = this.projectRepo.create({
             name: createprojectDto.name,
             description: createprojectDto.description,
