@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -11,17 +12,37 @@ export class UserService {
     ) {}
 
     async createUser(createUserDto) {
-        const user = this.userRepo.create({
-            name: createUserDto.name,
-            email: createUserDto.email,
-            password: createUserDto.password,
-            role: createUserDto.role,
-            // createdAt: new Date(),
-        });
-        console.log(createUserDto);
-        await this.userRepo.save(user);
-        return {message :'user created'};
-    }
+    const saltRounds = 10;
+
+    const hashedPassword = await bcrypt.hash(
+        createUserDto.password,
+        saltRounds
+    );
+
+    const user = this.userRepo.create({
+        name: createUserDto.name,
+        email: createUserDto.email,
+        password: hashedPassword, // ✅ store hashed password
+        role: createUserDto.role,
+    });
+
+    await this.userRepo.save(user);
+
+    return { message: 'user created' };
+}
+
+    // async createUser(createUserDto) {
+    //     const user = this.userRepo.create({
+    //         name: createUserDto.name,
+    //         email: createUserDto.email,
+    //         password: createUserDto.password,
+    //         role: createUserDto.role,
+    //         // createdAt: new Date(),
+    //     });
+    //     console.log(createUserDto);
+    //     await this.userRepo.save(user);
+    //     return {message :'user created'};
+    // }
 
     async getUser(email){
         const user= this.userRepo.find({where: email});
@@ -52,6 +73,11 @@ export class UserService {
   await this.userRepo.remove(user);
 
   return { message: 'User deleted' };
+}
+    async findByEmail(email: string) {
+  return this.userRepo.findOne({
+    where: { email },
+  });
 }
 
 }
