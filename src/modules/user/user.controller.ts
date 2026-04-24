@@ -2,9 +2,10 @@ import { Body, Controller, Delete, Get, Patch, Post, UseGuards } from '@nestjs/c
 import { UserService } from './user.service';
 import { CreateUserDto } from 'src/modules/user/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/common/guards/roles.guards';
+import { Roles } from 'src/common/decorators/roles.decorators';
 
 @Controller('user')
-@UseGuards(AuthGuard('jwt'))
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -13,16 +14,20 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async getUser(@Body() email:string){
     return this.userService.getUser(email);
   }
 
+  @UseGuards(AuthGuard('jwt'),RolesGuard)
+  @Roles('admin')
   @Get('all')
   async getAllUser(){
     return this.userService.getAllUser();
   }
-  
+
+  @UseGuards(AuthGuard('jwt'))
   @Patch()
   async updatePassword(@Body() { email, newPassword }: { email: string; newPassword: string }) {
     return this.userService.updatePassword(email, newPassword);
