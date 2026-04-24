@@ -27,7 +27,6 @@ export class UserController {
     return this.userService.getAllUser();
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Patch()
   async updatePassword(@Body() { email, newPassword }: { email: string; newPassword: string }) {
     return this.userService.updatePassword(email, newPassword);

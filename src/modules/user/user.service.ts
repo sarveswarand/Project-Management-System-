@@ -53,15 +53,32 @@ export class UserService {
         return this.userRepo.find();
     }
 
-    async updatePassword(email,newPassword){
-        const user = await this.userRepo.findOne({where:{email}});
-        if(!user){
-            throw new NotFoundException('User not found');
-        }
-        user.password = newPassword;
-        await this.userRepo.save(user);
-        return user;
-    }
+    async updatePassword(email: string, newPassword: string) {
+  const user = await this.userRepo.findOne({ where: { email } });
+
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+  user.password = hashedPassword;
+
+  await this.userRepo.save(user);
+
+  return { message: 'Password updated successfully' };
+}
+
+    // async updatePassword(email,newPassword){
+    //     const user = await this.userRepo.findOne({where:{email}});
+    //     if(!user){
+    //         throw new NotFoundException('User not found');
+    //     }
+    //     user.password = newPassword;
+    //     await this.userRepo.save(user);
+    //     return user;
+    // }
 
     async deleteUser(email: string) {
   const user = await this.userRepo.findOne({ where: { email } });
