@@ -22,7 +22,7 @@ export class UserService {
     const user = this.userRepo.create({
         name: createUserDto.name,
         email: createUserDto.email,
-        password: hashedPassword, // ✅ store hashed password
+        password: hashedPassword, 
         role: createUserDto.role,
     });
 
@@ -44,10 +44,18 @@ export class UserService {
     //     return {message :'user created'};
     // }
 
-    async getUser(email){
-        const user= this.userRepo.find({where: email});
-        return user;
-    }
+    async getUser(userId: string) {
+  const user = await this.userRepo.findOne({
+    where: { id: userId },
+  });
+
+  return user;
+}
+
+    // async getUser(email){
+    //     const user= this.userRepo.find({where: email});
+    //     return user;
+    // }
 
     async getAllUser(){
         return this.userRepo.find();

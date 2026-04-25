@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from 'src/modules/user/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -14,11 +14,23 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
 
+  // @UseGuards(AuthGuard('jwt'))
+  // @Get()
+  // async getUser(@Body() email:string){
+  //   return this.userService.getUser(email);
+  // }
+
+  // @UseGuards(AuthGuard('jwt'))
+  // @Get()
+  // async getUser(@Req() req: any) {
+  //   return this.userService.getUser(req.user.userId);
+  // }
+
   @UseGuards(AuthGuard('jwt'))
-  @Get()
-  async getUser(@Body() email:string){
-    return this.userService.getUser(email);
-  }
+@Get()
+async getUser(@Req() req: Request & { user: { userId: string } }) {
+  return this.userService.getUser(req.user.userId);
+}
 
   @UseGuards(AuthGuard('jwt'),RolesGuard)
   @Roles('admin')
