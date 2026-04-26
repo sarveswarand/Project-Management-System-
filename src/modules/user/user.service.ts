@@ -22,7 +22,7 @@ export class UserService {
     const user = this.userRepo.create({
         name: createUserDto.name,
         email: createUserDto.email,
-        password: hashedPassword, // ✅ store hashed password
+        password: hashedPassword, 
         role: createUserDto.role,
     });
 
