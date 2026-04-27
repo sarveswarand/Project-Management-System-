@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from "class-validator";
 import { Transform } from "class-transformer";
-import * as sanitizeHtml from 'sanitize-html';
+import sanitizeHtml from 'sanitize-html';
 
 export class updateProjectDto{
     @IsOptional()

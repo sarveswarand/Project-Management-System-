@@ -3,10 +3,9 @@ import {
   IsOptional,
   IsString,
   IsNumber,
-  ValidateNested,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import * as sanitizeHtml from 'sanitize-html';
+import sanitizeHtml from 'sanitize-html';
 
 export class CreateCommentDto {
   
