@@ -4,6 +4,7 @@ import { CreateUserDto } from 'src/modules/user/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/common/guards/roles.guards';
 import { Roles } from 'src/common/decorators/roles.decorators';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('user')
 export class UserController {
@@ -39,11 +40,14 @@ async getUser(@Req() req: Request & { user: { userId: string } }) {
     return this.userService.getAllUser();
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({default: { ttl: 60000, limit: 5 }})
   @Patch()
   async updatePassword(@Body() { email, newPassword }: { email: string; newPassword: string }) {
     return this.userService.updatePassword(email, newPassword);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete()
   async deleteUser(@Body('email') email:string){
     return this.userService.deleteUser(email);

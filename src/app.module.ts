@@ -8,9 +8,16 @@ import { ProjectModule } from './modules/project/project.module';
 import { TaskModule } from './modules/tasks/tasks.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -31,6 +38,6 @@ import { AuthModule } from './modules/auth/auth.module';
   AuthModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,ThrottlerGuard],
 })
 export class AppModule {}
