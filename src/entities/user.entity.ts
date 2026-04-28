@@ -12,6 +12,7 @@ export class User{
     name!: string;
 
     @Column({ unique: true ,select: false})
+    @Exclude()
     email!: string;
 
     @Column()

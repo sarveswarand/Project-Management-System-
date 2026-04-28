@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import {CreateProjectDto} from './dto/create-project.dto'
 import {updateProjectDto} from './dto/update-project.dto';
@@ -13,33 +13,39 @@ export class ProjectController {
 
   @Roles('admin') 
   @Post('create')
+  @HttpCode(201)
   async createProject(@Body() createProjectDto: CreateProjectDto) {
     return this.projectService.createProject(createProjectDto);
   }
 
   @Get('all')
+  @HttpCode(200)
   async findAll() {
     return this.projectService.findAll();
   }
 
   @Get(':id')
+  @HttpCode(200)
   async findOne(@Param('id') id: number) {
     return this.projectService.findOne(id);
   }
 
   @Patch(':id')
+  @HttpCode(200)
   async updateProject(@Param('id') id: number, @Body() updateProjectDto: updateProjectDto) {
     return this.projectService.updateProject(id, updateProjectDto);
   }
 
   @Roles('admin')
   @Post(':id/add-users')
+  @HttpCode(200)
   async addUsersToProject(@Param('id') id: number, @Body('userIds') userIds: string[]) {
     return this.projectService.addUsersToProject(id, userIds);
   }
 
   @Roles('admin')
   @Delete(':id')
+  @HttpCode(204)
   async remove(@Param('id') id: number) {
     return this.projectService.remove(id);
   }
