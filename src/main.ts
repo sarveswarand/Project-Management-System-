@@ -1,6 +1,6 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/global-exception-filter'; 
 import { LoggingInterceptor } from './common/interceptor/logging-interceptor';
 import { ResponseInterceptor } from './common/interceptor/response-interceptor';
@@ -18,6 +18,9 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor())
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalGuards(app.get(ThrottlerGuard));
+  app.useGlobalInterceptors(
+  new ClassSerializerInterceptor(app.get(Reflector)),
+);
   await app.listen(process.env.PORT ?? 3000);
   console.log(`Server is running on port ${process.env.PORT ?? 3000}`);
 }

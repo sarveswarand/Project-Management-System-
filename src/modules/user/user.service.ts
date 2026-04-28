@@ -46,7 +46,7 @@ export class UserService {
 
     async getUser(userId: string) {
   const user = await this.userRepo.findOne({
-    where: { id: userId },
+    where: { id: userId }, select: ['id', 'name', 'email', 'role', 'createdAt']
   });
 
   return user;

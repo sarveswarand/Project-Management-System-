@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
 import {Role} from 'src/common/enums/role.enum'
 import {Project} from './project.entity'
+import { Exclude } from "class-transformer";
 
 @Entity('users')
 export class User{
@@ -10,10 +11,11 @@ export class User{
     @Column()
     name!: string;
 
-    @Column({ unique: true })
+    @Column({ unique: true ,select: false})
     email!: string;
 
     @Column()
+    @Exclude()
     password!: string;
 
     @Column({ type: 'enum',enum: Role })
