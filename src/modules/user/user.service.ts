@@ -95,7 +95,7 @@ export class UserService {
     throw new NotFoundException('User not found');
   }
 
-  await this.userRepo.remove(user);
+  await this.userRepo.delete(user);
 
   return { message: 'User deleted' };
 }

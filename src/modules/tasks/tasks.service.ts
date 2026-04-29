@@ -92,6 +92,6 @@ export class TaskService {
   //  Delete task
   async deleteTask(id: number) {
     const task = await this.findOne(id);
-    return this.taskRepo.remove(task);
+    return this.taskRepo.delete(task);
   }
 }
