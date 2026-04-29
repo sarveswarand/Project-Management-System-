@@ -82,7 +82,8 @@ project.users = [...project.users, ...newUsers as User[]];
 }
 
     async remove(id: number) {
-  return this.projectRepo.delete(id);
+  await this.projectRepo.delete(id);
+  return { message: 'Project deleted successfully' };
 }
 
 }

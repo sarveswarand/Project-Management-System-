@@ -16,18 +16,6 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @Get()
-  // async getUser(@Body() email:string){
-  //   return this.userService.getUser(email);
-  // }
-
-  // @UseGuards(AuthGuard('jwt'))
-  // @Get()
-  // async getUser(@Req() req: any) {
-  //   return this.userService.getUser(req.user.userId);
-  // }
-
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -51,7 +39,8 @@ export class UserController {
     return this.userService.updatePassword(email, newPassword);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'),RolesGuard)
+  @Roles('admin')
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Body('email') email:string){
