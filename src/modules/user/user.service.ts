@@ -31,19 +31,6 @@ export class UserService {
     return { message: 'user created' };
 }
 
-    // async createUser(createUserDto) {
-    //     const user = this.userRepo.create({
-    //         name: createUserDto.name,
-    //         email: createUserDto.email,
-    //         password: createUserDto.password,
-    //         role: createUserDto.role,
-    //         // createdAt: new Date(),
-    //     });
-    //     console.log(createUserDto);
-    //     await this.userRepo.save(user);
-    //     return {message :'user created'};
-    // }
-
     async getUser(userId: string) {
   const user = await this.userRepo.findOne({
     where: { id: userId }, select: ['id', 'name', 'email', 'role', 'createdAt']
@@ -51,11 +38,6 @@ export class UserService {
 
   return user;
 }
-
-    // async getUser(email){
-    //     const user= this.userRepo.find({where: email});
-    //     return user;
-    // }
 
     async getAllUser(){
         return this.userRepo.find();
@@ -78,17 +60,7 @@ export class UserService {
   return { message: 'Password updated successfully' };
 }
 
-    // async updatePassword(email,newPassword){
-    //     const user = await this.userRepo.findOne({where:{email}});
-    //     if(!user){
-    //         throw new NotFoundException('User not found');
-    //     }
-    //     user.password = newPassword;
-    //     await this.userRepo.save(user);
-    //     return user;
-    // }
-
-    async deleteUser(email: string) {
+  async deleteUser(email: string) {
   const user = await this.userRepo.findOne({ where: { email } });
 
   if (!user) {
