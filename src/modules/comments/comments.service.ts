@@ -31,23 +31,23 @@ export class CommentsService {
     });
 }
 
-    async update(id: number, updateCommentDto: updateCommentDto){
-        const comment = await this.commentRepository.findOneBy({id});
-        if(!comment){
-            throw new Error('Comment not found');
-        }
-        comment.content = updateCommentDto.content || comment.content;
-        return await this.commentRepository.save(comment);
-    }
+    // async update(id: number, updateCommentDto: updateCommentDto){
+    //     const comment = await this.commentRepository.findOneBy({id});
+    //     if(!comment){
+    //         throw new Error('Comment not found');
+    //     }
+    //     comment.content = updateCommentDto.content || comment.content;
+    //     return await this.commentRepository.save(comment);
+    // }
 
-    async remove(id: number){
-        const comment = await this.commentRepository.findOneBy({id});
-        if(!comment){
-            throw new Error('Comment not found');
-        }   
-        await this.commentRepository.remove(comment);
-        return {message : 'Comment removed'};
-    }
+    // async remove(id: number){
+    //     const comment = await this.commentRepository.findOneBy({id});
+    //     if(!comment){
+    //         throw new Error('Comment not found');
+    //     }   
+    //     await this.commentRepository.remove(comment);
+    //     return {message : 'Comment removed'};
+    // }
 
     async findByTask(taskId: number) {
   // Step 1: Fetch all comments (flat)
@@ -87,5 +87,43 @@ private buildCommentTree(comments: Comment[]): Comment[] {
   return roots;
 }
 
+// Update Comment
+async update(id: number, updateCommentDto: updateCommentDto) {
+  const result = await this.commentRepository
+    .createQueryBuilder()
+    .update(Comment)
+    .set({
+      ...(updateCommentDto.content && {
+        content: updateCommentDto.content,
+      }),
+    })
+    .where('id = :id', { id })
+    .execute();
 
+  if (result.affected === 0) {
+    throw new Error('Comment not found');
+  }
+
+  return {
+    message: 'Comment updated successfully',
+  };
+}
+
+// Remove Comment
+async remove(id: number) {
+  const result = await this.commentRepository
+    .createQueryBuilder()
+    .delete()
+    .from(Comment)
+    .where('id = :id', { id })
+    .execute();
+
+  if (result.affected === 0) {
+    throw new Error('Comment not found');
+  }
+
+  return {
+    message: 'Comment removed',
+  };
+}
 }

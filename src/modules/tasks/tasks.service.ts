@@ -90,8 +90,25 @@ export class TaskService {
 }
 
   //  Delete task
-  async deleteTask(id: number) {
-    const task = await this.findOne(id);
-    return this.taskRepo.delete(task);
+  // async deleteTask(id: number) {
+  //   const task = await this.findOne(id);
+  //   return this.taskRepo.delete(task);
+  // }
+
+    async deleteTask(id: number) {
+    const result = await this.taskRepo
+      .createQueryBuilder()
+      .delete()
+      .from(Task)
+      .where('id = :id', { id })
+      .execute();
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Task not found');
+    }
+
+    return {
+      message: 'Task deleted successfully',
+    };
   }
 }

@@ -43,47 +43,92 @@ export class ProjectService {
     relations: ['users'],
   });
 }
-    async updateProject(id: number, updateProjectDto) {
-        const project = await this.projectRepo.findOne({ where: { id } });
-        if(!project){
-            throw new Error('Project not found');
-        }
-        project.name = updateProjectDto.name || project.name;
-        project.description = updateProjectDto.description || project.description;
-        await this.projectRepo.save(project);
-        return project;
-    }
+    // async updateProject(id: number, updateProjectDto) {
+    //     const project = await this.projectRepo.findOne({ where: { id } });
+    //     if(!project){
+    //         throw new Error('Project not found');
+    //     }
+    //     project.name = updateProjectDto.name || project.name;
+    //     project.description = updateProjectDto.description || project.description;
+    //     await this.projectRepo.save(project);
+    //     return project;
+    // }
 
-    async addUsersToProject(projectId: number, userIds: string[]) {
+//     async addUsersToProject(projectId: number, userIds: string[]) {
+//   const project = await this.projectRepo.findOne({
+//     where: { id: projectId },
+//     relations: ['users'],
+//   });
+
+//   if (!project) {
+//     throw new NotFoundException('Project not found');
+//   }
+
+//   const existingUserIds = new Set(project.users.map(user => user.id));
+
+  
+//   const newUsers: DeepPartial<User>[] = userIds
+//   .filter(id => !existingUserIds.has(id))
+//   .map(id => ({ id }));
+
+// project.users = [...project.users, ...newUsers as User[]];
+// //   const newUsers = userIds
+// //     .filter(id => !existingUserIds.has(id))
+// //     .map(id => ({ id }));
+
+// //   project.users = [...project.users, ...newUsers];
+
+//   return this.projectRepo.save(project);
+// }
+
+    async remove(id: number) {
+  await this.projectRepo.delete(id);
+  return { message: 'Project deleted successfully' };
+}
+
+// Update Project
+async updateProject(id: number, updateProjectDto) {
+  const result = await this.projectRepo
+    .createQueryBuilder()
+    .update(Project)
+    .set({
+      ...(updateProjectDto.name && { name: updateProjectDto.name }),
+      ...(updateProjectDto.description && {
+        description: updateProjectDto.description,
+      }),
+    })
+    .where('id = :id', { id })
+    .execute();
+
+  if (result.affected === 0) {
+    throw new NotFoundException('Project not found');
+  }
+
+  return {
+    message: 'Project updated successfully',
+  };
+}
+
+
+// Add Users To Project
+async addUsersToProject(projectId: number, userIds: string[]) {
   const project = await this.projectRepo.findOne({
     where: { id: projectId },
-    relations: ['users'],
   });
 
   if (!project) {
     throw new NotFoundException('Project not found');
   }
 
-  const existingUserIds = new Set(project.users.map(user => user.id));
+  await this.projectRepo
+    .createQueryBuilder()
+    .relation(Project, 'users')
+    .of(projectId)
+    .add(userIds);
 
-  
-  const newUsers: DeepPartial<User>[] = userIds
-  .filter(id => !existingUserIds.has(id))
-  .map(id => ({ id }));
-
-project.users = [...project.users, ...newUsers as User[]];
-//   const newUsers = userIds
-//     .filter(id => !existingUserIds.has(id))
-//     .map(id => ({ id }));
-
-//   project.users = [...project.users, ...newUsers];
-
-  return this.projectRepo.save(project);
-}
-
-    async remove(id: number) {
-  await this.projectRepo.delete(id);
-  return { message: 'Project deleted successfully' };
+  return {
+    message: 'Users added successfully',
+  };
 }
 
 }
