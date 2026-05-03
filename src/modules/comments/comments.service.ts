@@ -49,17 +49,36 @@ export class CommentsService {
     //     return {message : 'Comment removed'};
     // }
 
-    async findByTask(taskId: number) {
-  // Step 1: Fetch all comments (flat)
-  const comments = await this.commentRepository.find({
-    where: { task: { id: taskId } },
-    relations: ['parent'], // needed to access parent.id
-    order: { createdAt: 'ASC' }, 
-  });
+//     async findByTask(taskId: number) {
+//   // Step 1: Fetch all comments (flat)
+//   const comments = await this.commentRepository.find({
+//     where: { task: { id: taskId } },
+//     relations: ['parent'], // needed to access parent.id
+//     order: { createdAt: 'ASC' }, 
+//   });
 
-  // Step 2: Build tree
+//   // Step 2: Build tree
+//   return this.buildCommentTree(comments);
+// }
+
+async findByTask(taskId: number) {
+  const comments = await this.commentRepository
+    .createQueryBuilder('comment')
+    .leftJoin('comment.parent', 'parent')
+    .select([
+      'comment.id',
+      'comment.content',
+      'comment.userId',
+      'comment.createdAt',
+      'parent.id',
+    ])
+    .where('comment.taskId = :taskId', { taskId })
+    .orderBy('comment.createdAt', 'ASC')
+    .getMany();
+
   return this.buildCommentTree(comments);
 }
+
 private buildCommentTree(comments: Comment[]): Comment[] {
   const map = new Map<number, Comment>();
   const roots: Comment[] = [];

@@ -46,25 +46,73 @@ export class TaskService {
   return this.taskRepo.save(task);
 }
 
-  async findAll() {
-    return this.taskRepo.find({
-      relations: ['project', 'assignedTo'],
-    });
+  // async findAll() {
+  //   return this.taskRepo.find({
+  //     relations: ['project', 'assignedTo'],
+  //   });
+  // }
+
+  // //  Get one task
+  // async findOne(id: number) {
+  //   const task = await this.taskRepo.findOne({
+  //     where: { id },
+  //     relations: ['project', 'assignedTo'],
+  //   });
+
+  //   if (!task) {
+  //     throw new NotFoundException('Task not found');
+  //   }
+
+  //   return task;
+  // }
+
+  // Get all tasks (only required fields)
+async findAll() {
+  return this.taskRepo
+    .createQueryBuilder('task')
+    .leftJoin('task.project', 'project')
+    .leftJoin('task.assignedTo', 'user')
+    .select([
+      'task.id',
+      'task.title',
+      'task.description',
+      'task.status',
+      'project.id',
+      'project.name',
+      'user.id',
+      'user.name',
+      'user.email',
+    ])
+    .getMany();
+}
+
+
+// Get one task (only required fields)
+async findOne(id: number) {
+  const task = await this.taskRepo
+    .createQueryBuilder('task')
+    .leftJoin('task.project', 'project')
+    .leftJoin('task.assignedTo', 'user')
+    .select([
+      'task.id',
+      'task.title',
+      'task.description',
+      'task.status',
+      'project.id',
+      'project.name',
+      'user.id',
+      'user.name',
+      'user.email',
+    ])
+    .where('task.id = :id', { id })
+    .getOne();
+
+  if (!task) {
+    throw new NotFoundException('Task not found');
   }
 
-  //  Get one task
-  async findOne(id: number) {
-    const task = await this.taskRepo.findOne({
-      where: { id },
-      relations: ['project', 'assignedTo'],
-    });
-
-    if (!task) {
-      throw new NotFoundException('Task not found');
-    }
-
-    return task;
-  }
+  return task;
+}
 
   //  Update task
   async updateTask(id: number, dto) {

@@ -31,17 +31,51 @@ export class ProjectService {
         return {message :'project created'};
     }
 
-    async findAll() {
-  return this.projectRepo.find({
-    relations: ['users'],
-  });
+//     async findAll() {
+//   return this.projectRepo.find({
+//     relations: ['users'],
+//   });
+// }
+
+//     async findOne(id: number) {
+//   return this.projectRepo.findOne({
+//     where: { id },
+//     relations: ['users'],
+//   });
+// }
+
+// Get all projects (only required fields)
+async findAll() {
+  return this.projectRepo
+    .createQueryBuilder('project')
+    .leftJoin('project.users', 'user')
+    .select([
+      'project.id',
+      'project.name',
+      'project.description',
+      'user.id',
+      'user.name',
+      'user.email',
+    ])
+    .getMany();
 }
 
-    async findOne(id: number) {
-  return this.projectRepo.findOne({
-    where: { id },
-    relations: ['users'],
-  });
+
+// Get one project (only required fields)
+async findOne(id: number) {
+  return this.projectRepo
+    .createQueryBuilder('project')
+    .leftJoin('project.users', 'user')
+    .select([
+      'project.id',
+      'project.name',
+      'project.description',
+      'user.id',
+      'user.name',
+      'user.email',
+    ])
+    .where('project.id = :id', { id })
+    .getOne();
 }
     // async updateProject(id: number, updateProjectDto) {
     //     const project = await this.projectRepo.findOne({ where: { id } });
