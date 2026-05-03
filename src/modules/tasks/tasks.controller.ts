@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, HttpCode } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, HttpCode,Query } from '@nestjs/common';
 import { TaskService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -15,11 +15,29 @@ export class TaskController {
     return this.taskService.createTask(dto);
   }
 
+  // @Get()
+  // @HttpCode(200)
+  // findAll() {
+  //   return this.taskService.findAll();
+  // }
+
   @Get()
-  @HttpCode(200)
-  findAll() {
-    return this.taskService.findAll();
-  }
+@HttpCode(200)
+findAll(
+  @Query('page') page = 1,
+  @Query('limit') limit = 10,
+  @Query('status') status?: string,
+  @Query('projectId') projectId?: number,
+  @Query('userId') userId?: string,
+) {
+  return this.taskService.findAll({
+    page: Number(page),
+    limit: Number(limit),
+    status,
+    projectId: projectId ? Number(projectId) : undefined,
+    userId,
+  });
+}
 
   @Get(':id')
   @HttpCode(200)

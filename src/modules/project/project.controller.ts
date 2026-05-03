@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards,Query } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import {CreateProjectDto} from './dto/create-project.dto'
 import {updateProjectDto} from './dto/update-project.dto';
@@ -18,11 +18,28 @@ export class ProjectController {
     return this.projectService.createProject(createProjectDto);
   }
 
-  @Get('all')
-  @HttpCode(200)
-  async findAll() {
-    return this.projectService.findAll();
-  }
+  // @Get('all')
+  // @HttpCode(200)
+  // async findAll() {
+  //   return this.projectService.findAll();
+  // }
+
+  // Controller
+@Get('all')
+@HttpCode(200)
+async findAll(
+  @Query('page') page = 1,
+  @Query('limit') limit = 10,
+  @Query('name') name?: string,
+  @Query('userId') userId?: string,
+) {
+  return this.projectService.findAll({
+    page: Number(page),
+    limit: Number(limit),
+    name,
+    userId,
+  });
+}
 
   @Get(':id')
   @HttpCode(200)

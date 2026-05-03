@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards,Query, ParseIntPipe } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import {updateCommentDto} from './dto/update-comment.dto';
@@ -21,11 +21,24 @@ export class CommentsController {
     return this.commentsService.findOne(id);
   }
 
+  // @Get('/task/:taskId')
+  // @HttpCode(200)
+  // findByTask(@Param('taskId') taskId: string) {
+  //   return this.commentsService.findByTask(Number(taskId));
+  // }
+
   @Get('/task/:taskId')
-  @HttpCode(200)
-  findByTask(@Param('taskId') taskId: string) {
-    return this.commentsService.findByTask(Number(taskId));
-  }
+@HttpCode(200)
+findByTask(
+  @Param('taskId', ParseIntPipe) taskId: number,
+  @Query('page') page = 1,
+  @Query('limit') limit = 10,
+) {
+  return this.commentsService.findByTask(taskId, {
+    page: Number(page),
+    limit: Number(limit),
+  });
+}
 
   @Patch(':id')
   @HttpCode(200)

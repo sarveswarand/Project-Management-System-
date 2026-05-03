@@ -67,8 +67,29 @@ export class TaskService {
   // }
 
   // Get all tasks (only required fields)
-async findAll() {
-  return this.taskRepo
+// async findAll() {
+//   return this.taskRepo
+//     .createQueryBuilder('task')
+//     .leftJoin('task.project', 'project')
+//     .leftJoin('task.assignedTo', 'user')
+//     .select([
+//       'task.id',
+//       'task.title',
+//       'task.description',
+//       'task.status',
+//       'project.id',
+//       'project.name',
+//       'user.id',
+//       'user.name',
+//       'user.email',
+//     ])
+//     .getMany();
+// }
+
+async findAll(query) {
+  const { page, limit, status, projectId, userId } = query;
+
+  const qb = this.taskRepo
     .createQueryBuilder('task')
     .leftJoin('task.project', 'project')
     .leftJoin('task.assignedTo', 'user')
@@ -82,8 +103,36 @@ async findAll() {
       'user.id',
       'user.name',
       'user.email',
-    ])
-    .getMany();
+    ]);
+
+  // Filters
+  if (status) {
+    qb.andWhere('task.status = :status', { status });
+  }
+
+  if (projectId) {
+    qb.andWhere('project.id = :projectId', { projectId });
+  }
+
+  if (userId) {
+    qb.andWhere('user.id = :userId', { userId });
+  }
+
+  // Pagination
+  qb.skip((page - 1) * limit).take(limit);
+
+  // Sorting
+  qb.orderBy('task.id', 'DESC');
+
+  const [data, total] = await qb.getManyAndCount();
+
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data,
+  };
 }
 
 

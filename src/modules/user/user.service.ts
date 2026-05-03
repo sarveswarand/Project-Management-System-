@@ -131,9 +131,9 @@ export class UserService {
     return user;
   }
 
-  async getAllUser() {
-    return this.userRepository.findAll();
-  }
+  async getAllUser(query) {
+  return this.userRepository.findAll(query);
+}
 
   async updatePassword(
     email: string,

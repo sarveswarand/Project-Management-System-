@@ -37,9 +37,51 @@ export class UserRepository {
     });
   }
 
-  findAll(): Promise<User[]> {
-    return this.repo.find();
+  // findAll(): Promise<User[]> {
+  //   return this.repo.find();
+  // }
+
+  async findAll(query): Promise<any> {
+  const { page, limit, name, role } = query;
+
+  const qb = this.repo
+    .createQueryBuilder('user')
+    .select([
+      'user.id',
+      'user.name',
+      'user.email',
+      'user.role',
+      'user.createdAt',
+    ]);
+
+  // Filter by name
+  if (name) {
+    qb.andWhere('user.name LIKE :name', {
+      name: `%${name}%`,
+    });
   }
+
+  // Filter by role
+  if (role) {
+    qb.andWhere('user.role = :role', { role });
+  }
+
+  // Pagination
+  qb.skip((page - 1) * limit).take(limit);
+
+  // Sorting
+  qb.orderBy('user.createdAt', 'DESC');
+
+  const [data, total] = await qb.getManyAndCount();
+
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data,
+  };
+}
 
   findByEmail(
     email: string,

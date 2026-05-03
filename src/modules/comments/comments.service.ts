@@ -61,8 +61,28 @@ export class CommentsService {
 //   return this.buildCommentTree(comments);
 // }
 
-async findByTask(taskId: number) {
-  const comments = await this.commentRepository
+// async findByTask(taskId: number) {
+//   const comments = await this.commentRepository
+//     .createQueryBuilder('comment')
+//     .leftJoin('comment.parent', 'parent')
+//     .select([
+//       'comment.id',
+//       'comment.content',
+//       'comment.userId',
+//       'comment.createdAt',
+//       'parent.id',
+//     ])
+//     .where('comment.taskId = :taskId', { taskId })
+//     .orderBy('comment.createdAt', 'ASC')
+//     .getMany();
+
+//   return this.buildCommentTree(comments);
+// }
+
+async findByTask(taskId: number, query) {
+  const { page, limit } = query;
+
+  const qb = this.commentRepository
     .createQueryBuilder('comment')
     .leftJoin('comment.parent', 'parent')
     .select([
@@ -73,10 +93,22 @@ async findByTask(taskId: number) {
       'parent.id',
     ])
     .where('comment.taskId = :taskId', { taskId })
-    .orderBy('comment.createdAt', 'ASC')
-    .getMany();
+    .orderBy('comment.createdAt', 'ASC');
 
-  return this.buildCommentTree(comments);
+  // Pagination
+  qb.skip((page - 1) * limit).take(limit);
+
+  const [comments, total] = await qb.getManyAndCount();
+
+  const data = this.buildCommentTree(comments);
+
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data,
+  };
 }
 
 private buildCommentTree(comments: Comment[]): Comment[] {

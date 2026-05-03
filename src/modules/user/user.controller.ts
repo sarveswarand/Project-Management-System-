@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Patch, Post, Req, UseGuards,Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from 'src/modules/user/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,13 +23,31 @@ export class UserController {
     return this.userService.getUser(req.user.userId);
   }
 
-  @UseGuards(AuthGuard('jwt'),RolesGuard)
-  @Roles('admin')
-  @HttpCode(HttpStatus.OK)
-  @Get('all')
-  async getAllUser(){
-    return this.userService.getAllUser();
-  }
+  // @UseGuards(AuthGuard('jwt'),RolesGuard)
+  // @Roles('admin')
+  // @HttpCode(HttpStatus.OK)
+  // @Get('all')
+  // async getAllUser(){
+  //   return this.userService.getAllUser();
+  // }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('admin')
+@HttpCode(HttpStatus.OK)
+@Get('all')
+async getAllUser(
+  @Query('page') page = 1,
+  @Query('limit') limit = 10,
+  @Query('name') name?: string,
+  @Query('role') role?: string,
+) {
+  return this.userService.getAllUser({
+    page: Number(page),
+    limit: Number(limit),
+    name,
+    role,
+  });
+}
 
   @UseGuards(AuthGuard('jwt'))
   @Throttle({default: { ttl: 60000, limit: 5 }})

@@ -45,8 +45,26 @@ export class ProjectService {
 // }
 
 // Get all projects (only required fields)
-async findAll() {
-  return this.projectRepo
+// async findAll() {
+//   return this.projectRepo
+//     .createQueryBuilder('project')
+//     .leftJoin('project.users', 'user')
+//     .select([
+//       'project.id',
+//       'project.name',
+//       'project.description',
+//       'user.id',
+//       'user.name',
+//       'user.email',
+//     ])
+//     .getMany();
+// }
+
+// Service
+async findAll(query) {
+  const { page, limit, name, userId } = query;
+
+  const qb = this.projectRepo
     .createQueryBuilder('project')
     .leftJoin('project.users', 'user')
     .select([
@@ -56,8 +74,37 @@ async findAll() {
       'user.id',
       'user.name',
       'user.email',
-    ])
-    .getMany();
+    ]);
+
+  // Filter by project name
+  if (name) {
+    qb.andWhere('project.name LIKE :name', {
+      name: `%${name}%`,
+    });
+  }
+
+  // Filter by assigned user
+  if (userId) {
+    qb.andWhere('user.id = :userId', {
+      userId,
+    });
+  }
+
+  // Pagination
+  qb.skip((page - 1) * limit).take(limit);
+
+  // Sorting
+  qb.orderBy('project.id', 'DESC');
+
+  const [data, total] = await qb.getManyAndCount();
+
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data,
+  };
 }
 
 
