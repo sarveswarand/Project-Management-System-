@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 import { Task } from "./task.entity";
 
@@ -8,6 +8,7 @@ export class Project{
     id!: number;
 
     @Column()
+    @Index()
     name !: string;
 
     @Column()
@@ -21,6 +22,7 @@ export class Project{
     users!: User[];
 
     @OneToMany(() => Task, (task) => task.project)
+    @Index()
     tasks!: Task[];
 
 }

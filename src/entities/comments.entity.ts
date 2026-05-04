@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn,Index } from "typeorm";
 import { Task } from "./task.entity";
 
 @Entity('comments')
@@ -13,6 +13,7 @@ export class Comment {
     onDelete: 'CASCADE',
     })
     @JoinColumn({ name: 'taskId' })
+    @Index()
     task!: Task;
 
     @Column()
@@ -24,6 +25,7 @@ export class Comment {
         nullable: true
     })
     @JoinColumn({ name: 'parentId' })
+    @Index()
     parent?: Comment;
 
     @OneToMany(() => Comment, (comment) => comment.parent)

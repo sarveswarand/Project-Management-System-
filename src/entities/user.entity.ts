@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, Index } from "typeorm";
 import {Role} from 'src/common/enums/role.enum'
 import {Project} from './project.entity'
 import { Exclude } from "class-transformer";
@@ -20,6 +20,7 @@ export class User{
     password!: string;
 
     @Column({ type: 'enum',enum: Role })
+    @Index()
     role!: Role;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Index } from 'typeorm';
 import { User } from './user.entity';
 import { Project } from './project.entity';
 import { TaskStatus } from '../common/enums/tasks.enum';
@@ -15,6 +15,7 @@ export class Task {
   @Column({ nullable: true })
   description!: string;
 
+  @Index()
   @Column({
     type: 'enum',
     enum: TaskStatus,
@@ -22,11 +23,13 @@ export class Task {
   })
   status!: TaskStatus;
 
+  @Index()
   @ManyToOne(() => Project, (project) => project.tasks, {
     onDelete: 'CASCADE',
   })
   project!: Project;
 
+  @Index()
   @ManyToOne(() => User, {
     nullable: true,
     onDelete: 'SET NULL',
