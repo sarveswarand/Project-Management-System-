@@ -111,4 +111,58 @@ export class TaskService {
       message: 'Task deleted successfully',
     };
   }
+
+
+  async findDashboardTasks(companyId: number, page = 1, limit = 10) {
+  const qb = this.taskRepo
+    .createQueryBuilder('task')
+
+    //  Joins
+    .innerJoin('task.project', 'project')
+    .innerJoin('project.company', 'company')
+    .innerJoin('task.assignedTo', 'assignedUser')
+    .innerJoin('task.createdBy', 'creator')
+    .leftJoin('task.comments', 'comments')
+    .leftJoin('task.attachments', 'attachments')
+
+    //  Select only required fields
+    .select([
+      'task.id',
+      'task.title',
+      'task.status',
+      'task.createdAt',
+      'project.name',
+      'assignedUser.name',
+      'creator.name',
+    ])
+
+    //  Aggregations
+    .addSelect('COUNT(DISTINCT comments.id)', 'commentCount')
+    .addSelect('COUNT(DISTINCT attachments.id)', 'attachmentCount')
+
+    //  Filters
+    .where('company.id = :companyId', { companyId })
+    .andWhere('assignedUser.isActive = true')
+    .andWhere('task.createdAt >= NOW() - INTERVAL \'30 days\'')
+
+    // Only tasks having comments
+    .andWhere('comments.id IS NOT NULL')
+
+    //  Grouping (required for aggregation)
+    .groupBy('task.id')
+    .addGroupBy('project.name')
+    .addGroupBy('assignedUser.name')
+    .addGroupBy('creator.name')
+
+    //  Sorting
+    .orderBy('task.createdAt', 'DESC')
+
+    //  Pagination
+    .skip((page - 1) * limit)
+    .take(limit);
+
+  const data = await qb.getRawMany();
+
+  return data;
+}
 }
