@@ -22,7 +22,6 @@ export class Project{
     users!: User[];
 
     @OneToMany(() => Task, (task) => task.project)
-    @Index()
     tasks!: Task[];
 
 }
