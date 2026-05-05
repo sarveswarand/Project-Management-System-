@@ -9,6 +9,10 @@ import { TaskModule } from './modules/tasks/tasks.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AuditInterceptor } from './common/interceptor/audit-interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Audit } from './common/decorators/audit.decorator';
+import { AuditModule } from './modules/audit/audit.module';
 
 @Module({
   imports: [
@@ -38,9 +42,15 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
   ProjectModule,
   TaskModule,
   CommentsModule,
-  AuthModule
+  AuthModule,
+  AuditModule,
   ],
   controllers: [AppController],
-  providers: [AppService,ThrottlerGuard],
+  providers: [AppService,ThrottlerGuard,
+     {
+    provide: APP_INTERCEPTOR,
+    useClass: AuditInterceptor,
+  },
+  ],
 })
 export class AppModule {}

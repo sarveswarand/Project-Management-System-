@@ -1,8 +1,10 @@
-import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, HttpCode,Query } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, HttpCode,Query, UseInterceptors } from '@nestjs/common';
 import { TaskService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { AuditInterceptor } from 'src/common/interceptor/audit-interceptor';
+import { Audit } from 'src/common/decorators/audit.decorator';
 
 @Controller('task')
 @UseGuards(AuthGuard('jwt')) 
@@ -10,6 +12,7 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
+  @Audit('Create Task')
   @HttpCode(201)
   create(@Body() dto:CreateTaskDto) {
     return this.taskService.createTask(dto);
@@ -52,6 +55,7 @@ findAll(
   }
 
   @Delete(':id')
+  @Audit('Delete Task')
   @HttpCode(204)
   remove(@Param('id') id: number) {
     return this.taskService.deleteTask(id);
