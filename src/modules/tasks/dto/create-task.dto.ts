@@ -17,8 +17,8 @@ export class CreateTaskDto {
     @IsNumber()
     projectId!: number;   
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     @Transform(({ value }) => value.trim())
-    userId!: string;
+    userId?: string;
 }

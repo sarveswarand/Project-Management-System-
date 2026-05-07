@@ -34,7 +34,7 @@ export class Task {
     nullable: true,
     onDelete: 'SET NULL',
   })
-  assignedTo!: User;
+  assignedTo?: User;
 
   @OneToMany(() => Comment, (comment) => comment.task)
 comments!: Comment[];
