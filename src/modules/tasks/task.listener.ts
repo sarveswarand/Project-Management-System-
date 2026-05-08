@@ -28,7 +28,6 @@ export class TaskListener {
         <p>You have been assigned:</p>
 
         <b>${payload.title}</b>
-        <p>Project: <b>${payload.projectName}</b></p>
       `,
     });
 
@@ -50,7 +49,6 @@ export class TaskListener {
         <h2>Status Updated</h2>
 
         <p>Task: <b>${payload.title}</b></p>
-        <p>Project: <b>${payload.projectName}</b></p>
 
         <p>New Status:
           <b>${payload.status}</b>

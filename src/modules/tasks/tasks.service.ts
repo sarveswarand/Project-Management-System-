@@ -135,6 +135,7 @@ async findOne(id: number) {
   //  Update task
   async updateTask(id: number, dto) {
   const task = await this.findOne(id);
+  console.log(task.assignedTo);
   
   console.log('MAIL_USER:', process.env.MAIL_USER);
 console.log('MAIL_PASS:', process.env.MAIL_PASS);
@@ -164,51 +165,21 @@ console.log(user.email);
     this.eventEmitter.emit(TASK_ASSIGNED_EVENT, {
       email: user.email,
       title: task.title,
-      projectName: task.project.name,
     });
-//       await this.mailerService.sendMail({
-//   to: user.email,
 
-//   subject: 'Task Assigned',
-
-//   html: `
-//     <h2>New Task Assigned</h2>
-
-//     <p>You have been assigned:</p>
-
-//     <b>${task.title}</b>
-//   `,
-// });
   }
 
-  // if (dto.status !== undefined) {
-  //   task.status = dto.status;
-  // }
 
   if (dto.status !== undefined) {
   task.status = dto.status;
+  if(task.assignedTo?.email) {
 
   this.eventEmitter.emit(TASK_STATUS_UPDATED_EVENT, {
     email: task.assignedTo?.email,
     title: task.title,
     status: dto.status,
   });
-
-  // if (task.assignedTo?.email) {
-  //   await this.mailerService.sendMail({
-  //     to: task.assignedTo.email,
-
-  //     subject: 'Task Status Updated',
-
-  //     html: `
-  //       <h2>Status Updated</h2>
-
-  //       <p>Task: <b>${task.title}</b></p>
-
-  //       <p>New Status: <b>${dto.status}</b></p>
-  //     `,
-  //   });
-  // }
+}
 }
 
   return this.taskRepo.save(task);
@@ -262,23 +233,7 @@ console.log(user.email);
   await this.eventEmitter.emit(TASK_ASSIGNED_EVENT, {
     email: user.email,
     title: task.title,
-    projectName: task.project.name,
   });
-
-//   await this.mailerService.sendMail({
-//   to: user.email,
-
-//   subject: 'Task Assigned',
-
-//   html: `
-//     <h2>New Task Assigned</h2>
-
-//     <p>You have been assigned:</p>
-
-//     <b>${task.title}</b>
-//   `,
-// });
-
   return {
     message: 'Task assigned successfully',
     task,
