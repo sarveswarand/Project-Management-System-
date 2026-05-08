@@ -8,6 +8,7 @@ import { User } from '../../entities/user.entity';
 import { AuditModule } from '../audit/audit.module';
 import { MailerModule } from 'node_modules/@nestjs-modules/mailer/dist/mailer.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TaskListener } from './task.listener';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Task, Project, User]), AuditModule, 
@@ -29,7 +30,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   }),
 }),
   ],
-  providers: [TaskService],
+  providers: [TaskService, TaskListener],
   controllers: [TaskController],
 })
 export class TaskModule {}

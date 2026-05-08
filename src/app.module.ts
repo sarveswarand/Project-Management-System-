@@ -13,9 +13,11 @@ import { AuditInterceptor } from './common/interceptor/audit-interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Audit } from './common/decorators/audit.decorator';
 import { AuditModule } from './modules/audit/audit.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

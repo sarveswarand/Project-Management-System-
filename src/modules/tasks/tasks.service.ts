@@ -5,6 +5,8 @@ import { Task } from '../../entities/task.entity';
 import { Project } from '../../entities/project.entity';
 import { User } from '../../entities/user.entity';
 import { MailerService } from '@nestjs-modules/mailer';
+import { TASK_ASSIGNED_EVENT, TASK_STATUS_UPDATED_EVENT } from './task.event';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class TaskService {
@@ -18,6 +20,7 @@ export class TaskService {
     @InjectRepository(User)
     private userRepo: Repository<User>,
     private mailerService: MailerService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   //  Create Task
@@ -132,6 +135,7 @@ async findOne(id: number) {
   //  Update task
   async updateTask(id: number, dto) {
   const task = await this.findOne(id);
+  
   console.log('MAIL_USER:', process.env.MAIL_USER);
 console.log('MAIL_PASS:', process.env.MAIL_PASS);
 
@@ -157,19 +161,24 @@ console.log('MAIL_PASS:', process.env.MAIL_PASS);
 console.log(user.email);
 
     task.assignedTo = user;
-      await this.mailerService.sendMail({
-  to: user.email,
+    this.eventEmitter.emit(TASK_ASSIGNED_EVENT, {
+      email: user.email,
+      title: task.title,
+      projectName: task.project.name,
+    });
+//       await this.mailerService.sendMail({
+//   to: user.email,
 
-  subject: 'Task Assigned',
+//   subject: 'Task Assigned',
 
-  html: `
-    <h2>New Task Assigned</h2>
+//   html: `
+//     <h2>New Task Assigned</h2>
 
-    <p>You have been assigned:</p>
+//     <p>You have been assigned:</p>
 
-    <b>${task.title}</b>
-  `,
-});
+//     <b>${task.title}</b>
+//   `,
+// });
   }
 
   // if (dto.status !== undefined) {
@@ -179,21 +188,27 @@ console.log(user.email);
   if (dto.status !== undefined) {
   task.status = dto.status;
 
-  if (task.assignedTo?.email) {
-    await this.mailerService.sendMail({
-      to: task.assignedTo.email,
+  this.eventEmitter.emit(TASK_STATUS_UPDATED_EVENT, {
+    email: task.assignedTo?.email,
+    title: task.title,
+    status: dto.status,
+  });
 
-      subject: 'Task Status Updated',
+  // if (task.assignedTo?.email) {
+  //   await this.mailerService.sendMail({
+  //     to: task.assignedTo.email,
 
-      html: `
-        <h2>Status Updated</h2>
+  //     subject: 'Task Status Updated',
 
-        <p>Task: <b>${task.title}</b></p>
+  //     html: `
+  //       <h2>Status Updated</h2>
 
-        <p>New Status: <b>${dto.status}</b></p>
-      `,
-    });
-  }
+  //       <p>Task: <b>${task.title}</b></p>
+
+  //       <p>New Status: <b>${dto.status}</b></p>
+  //     `,
+  //   });
+  // }
 }
 
   return this.taskRepo.save(task);
@@ -244,19 +259,25 @@ console.log(user.email);
 
   await this.taskRepo.save(task);
 
-  await this.mailerService.sendMail({
-  to: user.email,
+  await this.eventEmitter.emit(TASK_ASSIGNED_EVENT, {
+    email: user.email,
+    title: task.title,
+    projectName: task.project.name,
+  });
 
-  subject: 'Task Assigned',
+//   await this.mailerService.sendMail({
+//   to: user.email,
 
-  html: `
-    <h2>New Task Assigned</h2>
+//   subject: 'Task Assigned',
 
-    <p>You have been assigned:</p>
+//   html: `
+//     <h2>New Task Assigned</h2>
 
-    <b>${task.title}</b>
-  `,
-});
+//     <p>You have been assigned:</p>
+
+//     <b>${task.title}</b>
+//   `,
+// });
 
   return {
     message: 'Task assigned successfully',
