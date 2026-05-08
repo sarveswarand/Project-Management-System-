@@ -8,6 +8,7 @@ import {
   TASK_ASSIGNED_EVENT,
   TASK_STATUS_UPDATED_EVENT,
 } from './task.event';
+import * as taskInterface from 'src/common/interfaces/task.interface';
 
 @Injectable()
 export class TaskListener {
@@ -16,7 +17,7 @@ export class TaskListener {
   ) {}
 
   @OnEvent(TASK_ASSIGNED_EVENT)
-  async handleTaskAssigned(payload: any) {
+  async handleTaskAssigned(payload: taskInterface.TaskAssignedEventPayload) {
     await this.mailerService.sendMail({
       to: payload.email,
 
@@ -38,7 +39,7 @@ export class TaskListener {
 
   @OnEvent(TASK_STATUS_UPDATED_EVENT)
   async handleStatusUpdated(
-    payload: any,
+    payload: taskInterface.TaskStatusUpdatedEventPayload,
   ) {
     await this.mailerService.sendMail({
       to: payload.email,
