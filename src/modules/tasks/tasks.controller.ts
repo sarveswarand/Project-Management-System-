@@ -5,6 +5,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuditInterceptor } from 'src/common/interceptor/audit-interceptor';
 import { Audit } from 'src/common/decorators/audit.decorator';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('task')
 @UseGuards(AuthGuard('jwt')) 
@@ -26,6 +27,8 @@ export class TaskController {
 
   @Get()
 @HttpCode(200)
+@UseInterceptors(CacheInterceptor)
+@CacheTTL(60)
 findAll(
   @Query('page') page = 1,
   @Query('limit') limit = 10,
@@ -44,6 +47,8 @@ findAll(
 
   @Get(':id')
   @HttpCode(200)
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(60)
   findOne(@Param('id') id: number) {
     return this.taskService.findOne(id);
   }

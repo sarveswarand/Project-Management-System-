@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards,Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards,Query, UseInterceptors } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import {CreateProjectDto} from './dto/create-project.dto'
 import {updateProjectDto} from './dto/update-project.dto';
 import { Roles } from 'src/common/decorators/roles.decorators';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/common/guards/roles.guards';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('project')
 @UseGuards(AuthGuard('jwt'),RolesGuard)
@@ -26,6 +27,8 @@ export class ProjectController {
 
   // Controller
 @Get('all')
+@UseInterceptors(CacheInterceptor)
+@CacheTTL(60)
 @HttpCode(200)
 async findAll(
   @Query('page') page = 1,

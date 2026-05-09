@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards,Query, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards,Query, ParseIntPipe, UseInterceptors } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import {updateCommentDto} from './dto/update-comment.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('comments')
 @UseGuards(AuthGuard('jwt'))
@@ -27,7 +28,9 @@ export class CommentsController {
   //   return this.commentsService.findByTask(Number(taskId));
   // }
 
-  @Get('/task/:taskId')
+@Get('/task/:taskId')
+@UseInterceptors(CacheInterceptor)
+@CacheTTL(30)
 @HttpCode(200)
 findByTask(
   @Param('taskId', ParseIntPipe) taskId: number,

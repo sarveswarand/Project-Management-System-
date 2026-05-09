@@ -14,6 +14,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Audit } from './common/decorators/audit.decorator';
 import { AuditModule } from './modules/audit/audit.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -40,6 +41,12 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     // logging: true,
     maxQueryExecutionTime: 1000, 
   }),
+  CacheModule.register({
+      ttl: 60, // seconds
+      max: 100, // max items
+      isGlobal: true,
+    }),
+
   UserModule,
   ProjectModule,
   TaskModule,
