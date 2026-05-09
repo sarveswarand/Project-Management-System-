@@ -14,7 +14,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Audit } from './common/decorators/audit.decorator';
 import { AuditModule } from './modules/audit/audit.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { CacheModule } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     maxQueryExecutionTime: 1000, 
   }),
   CacheModule.register({
-      ttl: 60, // seconds
+      ttl: 60000, // seconds
       max: 100, // max items
       isGlobal: true,
     }),
@@ -56,6 +56,10 @@ import { CacheModule } from '@nestjs/cache-manager';
   ],
   controllers: [AppController],
   providers: [AppService,ThrottlerGuard,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
      {
     provide: APP_INTERCEPTOR,
     useClass: AuditInterceptor,

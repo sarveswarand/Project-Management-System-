@@ -3,7 +3,7 @@ import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import {updateCommentDto} from './dto/update-comment.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('comments')
 @UseGuards(AuthGuard('jwt'))
@@ -30,7 +30,7 @@ export class CommentsController {
 
 @Get('/task/:taskId')
 @UseInterceptors(CacheInterceptor)
-@CacheTTL(30)
+@CacheTTL(30000)
 @HttpCode(200)
 findByTask(
   @Param('taskId', ParseIntPipe) taskId: number,

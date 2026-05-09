@@ -5,7 +5,8 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuditInterceptor } from 'src/common/interceptor/audit-interceptor';
 import { Audit } from 'src/common/decorators/audit.decorator';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import { In } from 'typeorm';
 
 @Controller('task')
 @UseGuards(AuthGuard('jwt')) 
@@ -19,6 +20,18 @@ export class TaskController {
     return this.taskService.createTask(dto);
   }
 
+  @Get('test-cache')
+@CacheKey('test-cache')
+@CacheTTL(300)
+testCache() {
+  console.log('API HIT', Date.now());
+
+  return {
+    message: 'cached',
+    time: Date.now(),
+  };
+}
+
   // @Get()
   // @HttpCode(200)
   // findAll() {
@@ -28,7 +41,7 @@ export class TaskController {
   @Get()
 @HttpCode(200)
 @UseInterceptors(CacheInterceptor)
-@CacheTTL(60)
+@CacheTTL(60000)
 findAll(
   @Query('page') page = 1,
   @Query('limit') limit = 10,
@@ -48,7 +61,7 @@ findAll(
   @Get(':id')
   @HttpCode(200)
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(60)
+  @CacheTTL(60000)
   findOne(@Param('id') id: number) {
     return this.taskService.findOne(id);
   }
