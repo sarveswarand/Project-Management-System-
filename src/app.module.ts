@@ -16,7 +16,8 @@ import { AuditModule } from './modules/audit/audit.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
-import KeyvRedis from 'node_modules/@keyv/redis/dist';
+import KeyvRedis from '@keyv/redis';
+import { Keyv } from 'node_modules/@keyv/redis/dist';
 
 @Module({
   imports: [
@@ -60,14 +61,21 @@ import KeyvRedis from 'node_modules/@keyv/redis/dist';
   //     }),
   //   }),
   CacheModule.registerAsync({
-      isGlobal: true,
+  isGlobal: true,
+  useFactory: async () => {
+    const store = await redisStore({
+      socket: {
+        host: 'localhost',
+        port: 6379,
+      },
+      ttl: 60000, // ✅ milliseconds
+    });
 
-      useFactory: async () => ({
-        store: [
-          new KeyvRedis('redis://localhost:6379'),
-        ],
-      }),
-    }),
+    return {
+      store,   // ✅ singular 'store', not 'stores'
+    };
+  },
+}),
   UserModule,
   ProjectModule,
   TaskModule,
