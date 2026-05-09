@@ -5,10 +5,10 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuditInterceptor } from 'src/common/interceptor/audit-interceptor';
 import { Audit } from 'src/common/decorators/audit.decorator';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('task')
-@UseGuards(AuthGuard('jwt')) 
+// @UseGuards(AuthGuard('jwt')) 
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
@@ -18,6 +18,18 @@ export class TaskController {
   create(@Body() dto:CreateTaskDto) {
     return this.taskService.createTask(dto);
   }
+
+@Get('test-cache')
+@CacheKey('test-cache')
+@CacheTTL(300)
+testCache() {
+  console.log('API HIT', Date.now());
+
+  return {
+    message: 'cached',
+    time: Date.now(),
+  };
+}
 
   // @Get()
   // @HttpCode(200)
