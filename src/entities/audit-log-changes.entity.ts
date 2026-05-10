@@ -37,10 +37,10 @@ export class AuditLogChanges {
   })
   newValue?: any;
 
-  @Column({
-    default: 'SUCCESS',
-  })
-  status!: string;
+//   @Column({
+//     default: 'SUCCESS',
+//   })
+//   status!: string;
 
   @CreateDateColumn()
   createdAt!: Date;

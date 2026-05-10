@@ -68,7 +68,7 @@ async createLogChange(data: {
     oldValue: data.oldValue,
     newValue: data.newValue,
 
-    status: data.status || 'SUCCESS',
+    // status: data.status || 'SUCCESS',
   });
 
   return this.auditLogChangesRepo.save(auditLog);

@@ -230,7 +230,7 @@ async updateTask(id: number, dto, currentUser) {
           name: user.name,
         },
 
-        status: 'SUCCESS',
+        // status: 'SUCCESS',
       });
     }
 
@@ -256,7 +256,7 @@ async updateTask(id: number, dto, currentUser) {
         oldValue: oldStatus,
         newValue: dto.status,
 
-        status: 'SUCCESS',
+        // status: 'SUCCESS',
       });
     }
 
