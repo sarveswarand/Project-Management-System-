@@ -7,6 +7,7 @@ import { User } from '../../entities/user.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { TASK_ASSIGNED_EVENT, TASK_STATUS_UPDATED_EVENT } from './task.event';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class TaskService {
@@ -21,6 +22,7 @@ export class TaskService {
     private userRepo: Repository<User>,
     private mailerService: MailerService,
     private eventEmitter: EventEmitter2,
+    private auditService: AuditService,
   ) {}
 
   //  Create Task
@@ -133,54 +135,139 @@ async findOne(id: number) {
 }
 
   //  Update task
-  async updateTask(id: number, dto) {
-  const task = await this.findOne(id);
-  console.log(task.assignedTo);
+//   async updateTask(id: number, dto) {
+//   const task = await this.findOne(id);
+//   console.log(task.assignedTo);
   
-  console.log('MAIL_USER:', process.env.MAIL_USER);
-console.log('MAIL_PASS:', process.env.MAIL_PASS);
+//   console.log('MAIL_USER:', process.env.MAIL_USER);
+// console.log('MAIL_PASS:', process.env.MAIL_PASS);
+
+//   if (dto.userId !== undefined) {
+//     // const user = await this.userRepo.findOne({
+//     //   where: { id: dto.userId },
+//     // });
+//     const user = await this.userRepo.findOne({
+//   where: { id: dto.userId },
+
+//   select: [
+//     'id',
+//     'name',
+//     'email',
+//     'role',
+//   ],
+// });
+
+//     if (!user) {
+//       throw new NotFoundException('User not found');
+//     }
+//     console.log(user);
+// console.log(user.email);
+
+//     task.assignedTo = user;
+//     this.eventEmitter.emit(TASK_ASSIGNED_EVENT, {
+//       email: user.email,
+//       title: task.title,
+//     });
+
+//   }
+
+
+//   if (dto.status !== undefined) {
+//   task.status = dto.status;
+//   if(task.assignedTo?.email) {
+
+//   this.eventEmitter.emit(TASK_STATUS_UPDATED_EVENT, {
+//     email: task.assignedTo?.email,
+//     title: task.title,
+//     status: dto.status,
+//   });
+// }
+// }
+
+//   return this.taskRepo.save(task);
+// }
+
+async updateTask(id: number, dto, currentUser) {
+  const task = await this.findOne(id);
+
+  const oldStatus = task.status;
+
+  const oldAssignedUser = task.assignedTo
+    ? {
+        id: task.assignedTo.id,
+        name: task.assignedTo.name,
+      }
+    : null;
+
 
   if (dto.userId !== undefined) {
-    // const user = await this.userRepo.findOne({
-    //   where: { id: dto.userId },
-    // });
     const user = await this.userRepo.findOne({
-  where: { id: dto.userId },
-
-  select: [
-    'id',
-    'name',
-    'email',
-    'role',
-  ],
-});
+      where: { id: dto.userId },
+      select: ['id', 'name', 'email', 'role'],
+    });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    console.log(user);
-console.log(user.email);
 
+    // Update task assignee
     task.assignedTo = user;
+
+    if (oldAssignedUser?.id !== user.id) {
+      await this.auditService.createLogChange({
+        action: 'TASK_ASSIGNEE_CHANGED',
+
+        userId: currentUser.userId,
+        // userName: currentUser.name,
+
+        taskId: task.id,
+        taskTitle: task.title,
+
+        oldValue: oldAssignedUser,
+
+        newValue: {
+          id: user.id,
+          name: user.name,
+        },
+
+        status: 'SUCCESS',
+      });
+    }
+
     this.eventEmitter.emit(TASK_ASSIGNED_EVENT, {
       email: user.email,
       title: task.title,
     });
-
   }
 
-
   if (dto.status !== undefined) {
-  task.status = dto.status;
-  if(task.assignedTo?.email) {
+    task.status = dto.status;
 
-  this.eventEmitter.emit(TASK_STATUS_UPDATED_EVENT, {
-    email: task.assignedTo?.email,
-    title: task.title,
-    status: dto.status,
-  });
-}
-}
+    if (oldStatus !== dto.status) {
+      await this.auditService.createLogChange({
+        action: 'TASK_STATUS_CHANGED',
+
+        userId: currentUser.userId,
+        // userName: currentUser.name,
+
+        taskId: task.id,
+        taskTitle: task.title,
+
+        oldValue: oldStatus,
+        newValue: dto.status,
+
+        status: 'SUCCESS',
+      });
+    }
+
+    if (task.assignedTo?.email) {
+      this.eventEmitter.emit(TASK_STATUS_UPDATED_EVENT, {
+        email: task.assignedTo.email,
+        title: task.title,
+        status: dto.status,
+      });
+    }
+  }
 
   return this.taskRepo.save(task);
 }

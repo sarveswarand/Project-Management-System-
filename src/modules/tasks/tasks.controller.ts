@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, HttpCode,Query, UseInterceptors, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, HttpCode,Query, UseInterceptors, ParseIntPipe, Req } from '@nestjs/common';
 import { TaskService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -68,8 +68,8 @@ findAll(
 
   @Patch(':id')
   @HttpCode(200)
-  update(@Param('id') id: number, @Body() dto:UpdateTaskDto) {
-    return this.taskService.updateTask(id, dto);
+  update(@Param('id') id: number, @Body() dto:UpdateTaskDto, @Req() req) {
+    return this.taskService.updateTask(id, dto, req.user);
   }
 
   @Delete(':id')
