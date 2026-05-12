@@ -6,7 +6,8 @@ import { TaskController } from './tasks.controller';
 import { Project } from '../../entities/project.entity';
 import { User } from '../../entities/user.entity';
 import { AuditModule } from '../audit/audit.module';
-import { MailerModule } from 'node_modules/@nestjs-modules/mailer/dist/mailer.module';
+// import { MailerModule } from 'node_modules/@nestjs-modules/mailer/dist/mailer.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TaskListener } from './task.listener';
 

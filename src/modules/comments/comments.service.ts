@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment } from 'src/entities/comments.entity';
@@ -24,11 +24,25 @@ export class CommentsService {
 
     return await this.commentRepository.save(newComment);
 }
-    async findOne(id: number) {
-    return await this.commentRepository.findOne({
-        where: { id },
-        relations: ['replies'],
+//     async findOne(id: number) {
+//     return await this.commentRepository.findOne({
+//         where: { id },
+//         relations: ['replies'],
+//     });
+// }
+async findOne(id: number) {
+  const comment =
+    await this.commentRepository.findOne({
+      where: { id },
     });
+
+  if (!comment) {
+    throw new NotFoundException(
+      'Comment not found',
+    );
+  }
+
+  return comment;
 }
 
     // async update(id: number, updateCommentDto: updateCommentDto){

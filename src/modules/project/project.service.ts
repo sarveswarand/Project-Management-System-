@@ -12,24 +12,56 @@ export class ProjectService {
         private projectRepo : Repository<Project>,
     ){}
 
-    async createProject(createprojectDto){
-       const existingProject = await this.projectRepo.findOne({
-    where: { name: createprojectDto.name },
-  });
+  //   async createProject(createprojectDto){
+  //      const existingProject = await this.projectRepo.findOne({
+  //   where: { name: createprojectDto.name },
+  // });
+
+  // if (existingProject) {
+  //   throw new BadRequestException(
+  //     `Project with name ${createprojectDto.name} already exists`,
+  //   );
+  // }
+  //       const project = this.projectRepo.create({
+  //           name: createprojectDto.name,
+  //           description: createprojectDto.description,
+  //           users: createprojectDto.userIds.map((userId) => ({ id: userId })),
+  //       });
+  //       await this.projectRepo.save(project);
+  //       return {message :'project created'};
+  //   }
+  async createProject(createprojectDto) {
+  const existingProject =
+    await this.projectRepo.findOne({
+      where: {
+        name: createprojectDto.name,
+      },
+    });
 
   if (existingProject) {
     throw new BadRequestException(
       `Project with name ${createprojectDto.name} already exists`,
     );
   }
-        const project = this.projectRepo.create({
-            name: createprojectDto.name,
-            description: createprojectDto.description,
-            users: createprojectDto.userIds.map((userId) => ({ id: userId })),
-        });
-        await this.projectRepo.save(project);
-        return {message :'project created'};
-    }
+
+  const project =
+    this.projectRepo.create({
+      name: createprojectDto.name,
+      description:
+        createprojectDto.description,
+      users:
+        createprojectDto.userIds.map(
+          (userId) => ({
+            id: userId,
+          }),
+        ),
+    });
+
+  const savedProject =
+    await this.projectRepo.save(project);
+
+  return savedProject;
+}
 
 //     async findAll() {
 //   return this.projectRepo.find({
@@ -110,7 +142,7 @@ async findAll(query) {
 
 // Get one project (only required fields)
 async findOne(id: number) {
-  return this.projectRepo
+  const project = await this.projectRepo
     .createQueryBuilder('project')
     .leftJoin('project.users', 'user')
     .select([
@@ -123,6 +155,14 @@ async findOne(id: number) {
     ])
     .where('project.id = :id', { id })
     .getOne();
+
+  if (!project) {
+    throw new NotFoundException(
+      'Project not found',
+    );
+  }
+
+  return project;
 }
     // async updateProject(id: number, updateProjectDto) {
     //     const project = await this.projectRepo.findOne({ where: { id } });
@@ -201,11 +241,13 @@ async addUsersToProject(projectId: number, userIds: string[]) {
     throw new NotFoundException('Project not found');
   }
 
+  for (const userId of userIds) {
   await this.projectRepo
     .createQueryBuilder()
     .relation(Project, 'users')
     .of(projectId)
-    .add(userIds);
+    .add(userId);
+}
 
   return {
     message: 'Users added successfully',
