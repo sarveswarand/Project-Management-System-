@@ -34,7 +34,6 @@ describe('AuthService', () => {
     jest.clearAllMocks();
   });
 
-  /* ---------------- LOGIN SUCCESS ---------------- */
   it('should login successfully and return token', async () => {
     const loginDto = {
       email: 'test@mail.com',
@@ -72,7 +71,6 @@ describe('AuthService', () => {
     });
   });
 
-  /* ---------------- USER NOT FOUND ---------------- */
   it('should throw UnauthorizedException if user not found', async () => {
     mockUserService.findByEmail.mockResolvedValue(null);
 
@@ -84,7 +82,6 @@ describe('AuthService', () => {
     ).rejects.toThrow(UnauthorizedException);
   });
 
-  /* ---------------- INVALID PASSWORD ---------------- */
   it('should throw UnauthorizedException if password mismatch', async () => {
     const user = {
       id: 1,
