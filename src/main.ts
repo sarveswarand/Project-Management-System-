@@ -5,9 +5,21 @@ import { GlobalExceptionFilter } from './common/filters/global-exception-filter'
 import { LoggingInterceptor } from './common/interceptor/logging-interceptor';
 import { ResponseInterceptor } from './common/interceptor/response-interceptor';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+    const config = new DocumentBuilder()
+    .setTitle('Project Management API')
+    .setDescription('API documentation for project management system')
+    .setVersion('1.0')
+    .addBearerAuth() 
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup('api', app, document);
+
   app.useGlobalPipes(
   new ValidationPipe({
     whitelist: true,
