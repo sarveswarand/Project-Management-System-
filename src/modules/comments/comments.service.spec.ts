@@ -45,7 +45,6 @@ describe('CommentsService', () => {
     jest.clearAllMocks();
   });
 
-  /* ---------------- CREATE COMMENT ---------------- */
   describe('create', () => {
     it('should create comment successfully', async () => {
       const dto = {
@@ -67,7 +66,6 @@ describe('CommentsService', () => {
     });
   });
 
-  /* ---------------- FIND ONE ---------------- */
   describe('findOne', () => {
     it('should return comment', async () => {
       mockCommentRepo.findOne.mockResolvedValue({
@@ -85,7 +83,6 @@ describe('CommentsService', () => {
     });
   });
 
-  /* ---------------- FIND BY TASK ---------------- */
   describe('findByTask', () => {
     it('should return paginated comment tree', async () => {
       mockCommentRepo.createQueryBuilder.mockReturnValue(mockQB);
@@ -110,7 +107,6 @@ describe('CommentsService', () => {
     });
   });
 
-  /* ---------------- UPDATE COMMENT ---------------- */
   describe('update', () => {
     it('should update comment successfully', async () => {
       mockCommentRepo.createQueryBuilder.mockReturnValue(mockQB);
@@ -137,7 +133,6 @@ describe('CommentsService', () => {
     });
   });
 
-  /* ---------------- REMOVE COMMENT ---------------- */
   describe('remove', () => {
     it('should delete comment successfully', async () => {
       mockCommentRepo.createQueryBuilder.mockReturnValue(mockQB);
