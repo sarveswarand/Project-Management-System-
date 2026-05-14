@@ -37,10 +37,6 @@ export class UserRepository {
     });
   }
 
-  // findAll(): Promise<User[]> {
-  //   return this.repo.find();
-  // }
-
   async findAll(query): Promise<any> {
   const { page, limit, name, role } = query;
 

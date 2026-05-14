@@ -62,12 +62,6 @@ testCache() {
   };
 }
 
-  // @Get()
-  // @HttpCode(200)
-  // findAll() {
-  //   return this.taskService.findAll();
-  // }
-
 @Get()
 @ApiOperation({ summary: 'Get all tasks with filters' })
 @ApiQuery({ name: 'page', required: false, example: 1 })

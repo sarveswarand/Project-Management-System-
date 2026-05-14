@@ -36,12 +36,6 @@ export class CommentsController {
     return this.commentsService.findOne(id);
   }
 
-  // @Get('/task/:taskId')
-  // @HttpCode(200)
-  // findByTask(@Param('taskId') taskId: string) {
-  //   return this.commentsService.findByTask(Number(taskId));
-  // }
-
 @Get('/task/:taskId')
 @UseInterceptors(CacheInterceptor)
 @CacheTTL(30000)

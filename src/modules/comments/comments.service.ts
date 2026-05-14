@@ -24,12 +24,7 @@ export class CommentsService {
 
     return await this.commentRepository.save(newComment);
 }
-//     async findOne(id: number) {
-//     return await this.commentRepository.findOne({
-//         where: { id },
-//         relations: ['replies'],
-//     });
-// }
+
 async findOne(id: number) {
   const comment =
     await this.commentRepository.findOne({
@@ -44,54 +39,6 @@ async findOne(id: number) {
 
   return comment;
 }
-
-    // async update(id: number, updateCommentDto: updateCommentDto){
-    //     const comment = await this.commentRepository.findOneBy({id});
-    //     if(!comment){
-    //         throw new Error('Comment not found');
-    //     }
-    //     comment.content = updateCommentDto.content || comment.content;
-    //     return await this.commentRepository.save(comment);
-    // }
-
-    // async remove(id: number){
-    //     const comment = await this.commentRepository.findOneBy({id});
-    //     if(!comment){
-    //         throw new Error('Comment not found');
-    //     }   
-    //     await this.commentRepository.remove(comment);
-    //     return {message : 'Comment removed'};
-    // }
-
-//     async findByTask(taskId: number) {
-//   // Step 1: Fetch all comments (flat)
-//   const comments = await this.commentRepository.find({
-//     where: { task: { id: taskId } },
-//     relations: ['parent'], // needed to access parent.id
-//     order: { createdAt: 'ASC' }, 
-//   });
-
-//   // Step 2: Build tree
-//   return this.buildCommentTree(comments);
-// }
-
-// async findByTask(taskId: number) {
-//   const comments = await this.commentRepository
-//     .createQueryBuilder('comment')
-//     .leftJoin('comment.parent', 'parent')
-//     .select([
-//       'comment.id',
-//       'comment.content',
-//       'comment.userId',
-//       'comment.createdAt',
-//       'parent.id',
-//     ])
-//     .where('comment.taskId = :taskId', { taskId })
-//     .orderBy('comment.createdAt', 'ASC')
-//     .getMany();
-
-//   return this.buildCommentTree(comments);
-// }
 
 async findByTask(taskId: number, query) {
   const { page, limit } = query;

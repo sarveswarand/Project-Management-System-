@@ -134,59 +134,6 @@ async findOne(id: number) {
   return task;
 }
 
-  //  Update task
-//   async updateTask(id: number, dto) {
-//   const task = await this.findOne(id);
-//   console.log(task.assignedTo);
-  
-//   console.log('MAIL_USER:', process.env.MAIL_USER);
-// console.log('MAIL_PASS:', process.env.MAIL_PASS);
-
-//   if (dto.userId !== undefined) {
-//     // const user = await this.userRepo.findOne({
-//     //   where: { id: dto.userId },
-//     // });
-//     const user = await this.userRepo.findOne({
-//   where: { id: dto.userId },
-
-//   select: [
-//     'id',
-//     'name',
-//     'email',
-//     'role',
-//   ],
-// });
-
-//     if (!user) {
-//       throw new NotFoundException('User not found');
-//     }
-//     console.log(user);
-// console.log(user.email);
-
-//     task.assignedTo = user;
-//     this.eventEmitter.emit(TASK_ASSIGNED_EVENT, {
-//       email: user.email,
-//       title: task.title,
-//     });
-
-//   }
-
-
-//   if (dto.status !== undefined) {
-//   task.status = dto.status;
-//   if(task.assignedTo?.email) {
-
-//   this.eventEmitter.emit(TASK_STATUS_UPDATED_EVENT, {
-//     email: task.assignedTo?.email,
-//     title: task.title,
-//     status: dto.status,
-//   });
-// }
-// }
-
-//   return this.taskRepo.save(task);
-// }
-
 async updateTask(id: number, dto, currentUser) {
   const task = await this.findOne(id);
 
