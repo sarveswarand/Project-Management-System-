@@ -93,7 +93,7 @@ private buildCommentTree(comments: Comment[]): Comment[] {
       // No parent → root comment
       roots.push(comment);
     }
-    delete comment.parent; // Optional: remove parent reference to avoid circular JSON issues
+    delete comment.parent; 
   }
 
   return roots;

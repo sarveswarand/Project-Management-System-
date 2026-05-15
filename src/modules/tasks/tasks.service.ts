@@ -219,12 +219,6 @@ async updateTask(id: number, dto, currentUser) {
   return this.taskRepo.save(task);
 }
 
-  //  Delete task
-  // async deleteTask(id: number) {
-  //   const task = await this.findOne(id);
-  //   return this.taskRepo.delete(task);
-  // }
-
     async deleteTask(id: number) {
     const result = await this.taskRepo
       .createQueryBuilder()
