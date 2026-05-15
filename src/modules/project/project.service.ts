@@ -12,24 +12,6 @@ export class ProjectService {
         private projectRepo : Repository<Project>,
     ){}
 
-  //   async createProject(createprojectDto){
-  //      const existingProject = await this.projectRepo.findOne({
-  //   where: { name: createprojectDto.name },
-  // });
-
-  // if (existingProject) {
-  //   throw new BadRequestException(
-  //     `Project with name ${createprojectDto.name} already exists`,
-  //   );
-  // }
-  //       const project = this.projectRepo.create({
-  //           name: createprojectDto.name,
-  //           description: createprojectDto.description,
-  //           users: createprojectDto.userIds.map((userId) => ({ id: userId })),
-  //       });
-  //       await this.projectRepo.save(project);
-  //       return {message :'project created'};
-  //   }
   async createProject(createprojectDto) {
   const existingProject =
     await this.projectRepo.findOne({
@@ -62,35 +44,6 @@ export class ProjectService {
 
   return savedProject;
 }
-
-//     async findAll() {
-//   return this.projectRepo.find({
-//     relations: ['users'],
-//   });
-// }
-
-//     async findOne(id: number) {
-//   return this.projectRepo.findOne({
-//     where: { id },
-//     relations: ['users'],
-//   });
-// }
-
-// Get all projects (only required fields)
-// async findAll() {
-//   return this.projectRepo
-//     .createQueryBuilder('project')
-//     .leftJoin('project.users', 'user')
-//     .select([
-//       'project.id',
-//       'project.name',
-//       'project.description',
-//       'user.id',
-//       'user.name',
-//       'user.email',
-//     ])
-//     .getMany();
-// }
 
 // Service
 async findAll(query) {
